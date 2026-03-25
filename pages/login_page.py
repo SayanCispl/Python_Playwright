@@ -3,9 +3,9 @@ from config.settings import Settings
 
 class LoginPage(BasePage):
     def __init__(self, page, test_name="login_test"):
-        super().__init__(page, test_name)
+        super().__init__(page, test_name)  # ✅ consistent signature
         self.base_url = Settings.BASE_URL
-        self.username = Settings.USERNAME
+        self.username = Settings.APP_USERNAME   # ✅ renamed key
         self.password = Settings.PASSWORD
 
     def open(self):
