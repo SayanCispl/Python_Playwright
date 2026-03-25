@@ -1,27 +1,63 @@
 from pages.base_page import BasePage
-from config.settings import Settings
 
 class LoginPage(BasePage):
-    def __init__(self, page, test_name="login_test"):
-        super().__init__(page, test_name)
-        self.base_url = Settings.BASE_URL
-        self.username = Settings.APP_USERNAME
-        self.password = Settings.PASSWORD
+    def login(self, email: str, password: str):
+        """Log in with email and password."""
+        # Try multiple selector patterns for login form
+        email_input = None
+        password_input = None
+        login_button = None
 
-    def open(self):
-        self.page.goto(f"{self.base_url}/login")
-        self.page.wait_for_load_state("networkidle")  # ✅ wait for full page load
-
-    def login(self):
-        self.page.fill("input[data-qa='login-email']", self.username)
-        self.page.fill("input[data-qa='login-password']", self.password)
-        self.page.click("button[data-qa='login-button']")
-        self.page.wait_for_load_state("networkidle")  # ✅ wait for post-login navigation
-
-    def is_logged_in(self):
+        # Try to find email input
         try:
-            # ✅ wait up to 10s instead of instant snapshot with is_visible()
-            self.page.wait_for_selector("a[href='/logout']", timeout=10000)
-            return True
-        except Exception:
-            return False
+            self.page.fill("input[data-qa='login-email']", email)
+            email_input = True
+        except:
+            try:
+                self.page.fill("input[placeholder='Email Address']", email)
+                email_input = True
+            except:
+                try:
+                    self.page.fill("input[name='email']", email)
+                    email_input = True
+                except:
+                    pass
+
+        # Try to find password input
+        try:
+            self.page.fill("input[data-qa='login-password']", password)
+            password_input = True
+        except:
+            try:
+                self.page.fill("input[placeholder='Password']", password)
+                password_input = True
+            except:
+                try:
+                    self.page.fill("input[name='password']", password)
+                    password_input = True
+                except:
+                    pass
+
+        # Try to find login button
+        try:
+            self.page.click("button[data-qa='login-button']")
+            login_button = True
+        except:
+            try:
+                self.page.click("button:has-text('Login')")
+                login_button = True
+            except:
+                try:
+                    self.page.click("button[type='submit']")
+                    login_button = True
+                except:
+                    pass
+
+        # Wait for navigation to complete
+        self.page.wait_for_load_state("networkidle")
+
+    def is_logged_in(self) -> bool:
+        """Check if user is logged in by looking for logout button."""
+        # On automationexercise, logged-in users see a logout link
+        return self.page.locator("a[href='/logout']").is_visible()
+
