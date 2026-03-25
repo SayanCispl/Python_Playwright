@@ -4,11 +4,7 @@ __pycache__/
 *.pyo
 *.pyd
 venv/
-<<<<<<< HEAD
 config/.env
-=======
-.env
->>>>>>> 68a8e38 (first commit)
 
 # PyCharm
 .idea/
