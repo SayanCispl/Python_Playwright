@@ -1,39 +1,23 @@
 import allure
-from pages.home_page import HomePage
-from pages.product_page import ProductPage
+from pages.cart_page import CartPage
 
-@allure.feature("Add to Cart")
-def test_add_to_cart(page, base_url):
-    home = HomePage(page, base_url)
-    home.goto("/")
+@allure.feature("Cart")
+@allure.story("Add item to cart")
+@allure.severity(allure.severity_level.CRITICAL)
+def test_add_to_cart(page):
+    cart = CartPage(page, test_name="test_add_to_cart")
 
-    # Navigate to products page if needed
-    try:
-        page.click("a[href='/products']")
-    except Exception as e:
-        print(f"Error navigating to products: {e}")
-        try:
-            page.click("a:has-text('Products')")
-        except:
-            print("Could not navigate to products page")
-            # Just verify we're on a page
-            assert page.content(), "Page should have content"
-            return
+    with allure.step("Navigate to shop page"):
+        cart.navigate()
 
-    try:
-        product = ProductPage(page, base_url)
-        product.add_first_product_to_cart()
-    except Exception as e:
-        print(f"Error adding to cart: {e}")
-        # Don't fail test if selector issues
-        pass
+    with allure.step("Add item to cart"):
+        cart.add_item_to_cart()
 
-    # Verify basic page functionality
-    try:
-        page.click("a[href='/view_cart']")
-        assert page.locator("td.cart_description").is_visible()
-    except Exception as e:
-        print(f"Could not verify cart: {e}")
-        # Just verify page has content
-        assert page.content(), "Page should have content"
+    with allure.step("Validate cart page is visible"):
+        assert cart.is_cart_page(), "Cart page not displayed"
 
+    allure.attach(
+        page.screenshot(),
+        name="Cart Page Screenshot",
+        attachment_type=allure.attachment_type.PNG
+    )

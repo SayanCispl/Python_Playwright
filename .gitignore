@@ -4,7 +4,7 @@ __pycache__/
 *.pyo
 *.pyd
 venv/
-.env
+config/.env
 
 # PyCharm
 .idea/
