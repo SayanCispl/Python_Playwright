@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.env
+
+# PyCharm
+.idea/
+
+# Allure results
+allure-results/
+
+# Playwright artifacts
+playwright-report/
+trace.zip
+
+# Docker
+*.log
+
+# OS
+.DS_Store
