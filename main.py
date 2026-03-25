@@ -1,16 +1,39 @@
-# This is a sample Python script.
+import os
+import sys
+import subprocess
+from dotenv import load_dotenv
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+# Ensure project root is on sys.path
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
+def main():
+    # Load environment variables from .env
+    load_dotenv()
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+    base_url = os.getenv("BASE_URL", "https://automationexercise.com")
+    headless = os.getenv("HEADLESS", "true").lower() == "true"
 
+    print(f"Running tests against {base_url} (headless={headless})")
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+    # Build pytest command
+    cmd = [
+        "pytest",
+        "--browser", "chromium",
+        "--base-url", base_url,
+        "--alluredir=allure-results",
+        "-q"
+    ]
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    # Playwright pytest plugin does not support --headless flag.
+    # Use PWDEBUG=1 to force headed mode if HEADLESS=false
+    if not headless:
+        os.environ["PWDEBUG"] = "1"
+
+    # Allow passing extra args to pytest
+    if len(sys.argv) > 1:
+        cmd.extend(sys.argv[1:])
+
+    subprocess.run(cmd, check=True)
+
+if __name__ == "__main__":
+    main()
