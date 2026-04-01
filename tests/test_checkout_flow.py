@@ -4,6 +4,7 @@ from pages.product_page import ProductPage
 from pages.cart_page import CartPage
 from pages.checkout_page import CheckoutPage
 
+
 @allure.feature("Checkout")
 @allure.story("Complete purchase flow")
 @allure.severity(allure.severity_level.BLOCKER)
