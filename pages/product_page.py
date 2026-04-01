@@ -11,6 +11,7 @@ class ProductPage(BasePage):
         self.page.wait_for_load_state("networkidle")
 
     def search_product(self, product_name):
+        self.open_products()  # ✅ navigate first before searching
         self.page.fill("#search_product", product_name)
         self.page.click("#submit_search")
         self.page.wait_for_load_state("networkidle")
@@ -20,7 +21,7 @@ class ProductPage(BasePage):
         self.page.click("text=Add to cart")
         self.page.wait_for_load_state("networkidle")
 
-    def add_blue_top_to_cart(self):  # ✅ added missing method
+    def add_blue_top_to_cart(self):
         self.page.wait_for_selector(".product-image-wrapper", timeout=10000)
         self.page.hover(".product-image-wrapper:first-child")
         self.page.click(".product-image-wrapper:first-child .add-to-cart")
