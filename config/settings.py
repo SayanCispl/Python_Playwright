@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Settings:
-    BASE_URL = os.getenv("BASE_URL")
-    SHOP_URL = os.getenv("SHOP_URL", f"{BASE_URL}/products")
-    APP_USERNAME = os.getenv("APP_USERNAME")   # ✅ avoids system USERNAME clash
+    BASE_URL = os.getenv("BASE_URL", "https://automationexercise.com")
+    APP_USERNAME = os.getenv("APP_USERNAME")
     PASSWORD = os.getenv("PASSWORD")
-    test_name = "checkout_flow"
+    HEADLESS = os.getenv("HEADLESS", "true").lower() == "true"
+    SHOP_URL = os.getenv("SHOP_URL") or f"{BASE_URL}/products"  # ✅ works at class level

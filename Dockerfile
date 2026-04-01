@@ -1,23 +1,16 @@
-FROM python:3.11-slim
+# Must match playwright version in requirements.txt (1.51.0)
+FROM mcr.microsoft.com/playwright/python:v1.51.0-noble
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# system deps for playwright browsers
-RUN apt-get update && apt-get install -y wget gnupg ca-certificates libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libx11-xcb1 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libasound2 libpangocairo-1.0-0 libgtk-3-0 libxss1 libxtst6 libxshmfence1 --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
-
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install playwright browsers and dependencies
-RUN python -m playwright install --with-deps
-
 COPY . .
 
-# default envs (can be overridden)
 ENV BASE_URL=https://automationexercise.com
 ENV HEADLESS=true
 

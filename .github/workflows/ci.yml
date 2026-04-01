@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.11]
@@ -37,32 +37,18 @@ jobs:
 
       - name: Install Playwright browsers
         run: |
-          python -m playwright install --with-deps chromium  # ✅ only install chromium, faster CI
-
-      # ✅ Catch missing secrets before tests run, fail fast with a clear message
-      - name: Validate required secrets
-        run: |
-          if [ -z "${{ secrets.APP_USERNAME }}" ]; then
-            echo "❌ Secret APP_USERNAME is not set in GitHub repository secrets"
-            exit 1
-          fi
-          if [ -z "${{ secrets.PASSWORD }}" ]; then
-            echo "❌ Secret PASSWORD is not set in GitHub repository secrets"
-            exit 1
-          fi
-          echo "✅ All required secrets are present"
+          python -m playwright install --with-deps
 
       - name: Run tests
         env:
           BASE_URL: https://automationexercise.com
-          HEADLESS: "true"   # ✅ quoted string — env vars are always strings
-          APP_USERNAME: ${{ secrets.APP_USERNAME }}
-          PASSWORD: ${{ secrets.PASSWORD }}
+          HEADLESS: true
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
         run: |
           pytest --alluredir=allure-results -q
 
       - name: Upload Allure results
-        if: always()   # ✅ upload even on failure so you can inspect the report
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
