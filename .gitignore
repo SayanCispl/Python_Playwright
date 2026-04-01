@@ -20,4 +20,4 @@ trace.zip
 *.log
 
 # OS
-.DS_Store
+.DS_Store.idea/
