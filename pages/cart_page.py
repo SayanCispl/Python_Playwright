@@ -34,8 +34,6 @@ class CartPage(BasePage):
             raise AssertionError(f"Not on cart page. URL: {self.page.url}")
 
     def is_cart_page(self) -> bool:
-        try:
-            self.wait(self.cart_page_identifier)
-            return True
-        except Exception:
-            return "cart" in self.page.url.lower()
+        return self.page.url.endswith("/view_cart") and \
+            self.page.is_visible("table.cart_info")
+

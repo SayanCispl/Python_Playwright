@@ -21,4 +21,7 @@ class CheckoutPage(BasePage):
     # Validations
     # =========================
     def is_checkout_page(self) -> bool:
-        return self.page.url == self.checkout_url
+        return self.page.url.endswith("/checkout") and \
+            self.page.is_visible("h2:has-text('Address Details')")
+
+

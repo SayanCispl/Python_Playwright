@@ -22,9 +22,21 @@ class ProductPage(BasePage):
         self.page.wait_for_load_state("networkidle")
 
     def add_blue_top_to_cart(self):
+        self.logger.info("Adding Blue Top to cart")
+        # Wait for product list
         self.page.wait_for_selector(".product-image-wrapper", timeout=10000)
+
+        # Hover and click Add to cart for the first product (Blue Top)
         self.page.hover(".product-image-wrapper:first-child")
         self.page.click(".product-image-wrapper:first-child .add-to-cart")
+
+        # Wait for modal popup
+        self.page.wait_for_selector("text=Your product has been added to cart.", timeout=5000)
+
+        # Click "View Cart" link inside modal
+        self.page.click("a[href='/view_cart']")
+
+        # Wait for cart page to load
         self.page.wait_for_load_state("networkidle")
 
     def view_cart(self):
