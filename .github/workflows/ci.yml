@@ -43,12 +43,13 @@ jobs:
         env:
           BASE_URL: https://automationexercise.com
           HEADLESS: true
-          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
-          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          APP_USERNAME: ${{ secrets.APP_USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
         run: |
           pytest --alluredir=allure-results -q
 
       - name: Upload Allure results
+        if: always()                    # ✅ upload even if tests fail
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
