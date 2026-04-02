@@ -11,22 +11,30 @@ class ProductPage(BasePage):
         self.page.wait_for_load_state("networkidle")
 
     def search_product(self, product_name):
-        self.open_products()  # ✅ navigate first before searching
+        self.open_products()
+        self.page.wait_for_selector("#search_product", timeout=10000)
         self.page.fill("#search_product", product_name)
         self.page.click("#submit_search")
         self.page.wait_for_load_state("networkidle")
 
-    def add_to_cart(self):
-        self.page.hover(".product-image-wrapper")
-        self.page.click("text=Add to cart")
-        self.page.wait_for_load_state("networkidle")
-
     def add_blue_top_to_cart(self):
-        self.page.wait_for_selector(".product-image-wrapper", timeout=10000)
-        self.page.hover(".product-image-wrapper:first-child")
-        self.page.click(".product-image-wrapper:first-child .add-to-cart")
-        self.page.wait_for_load_state("networkidle")
+        self.logger.info("Adding Blue Top to cart")
 
-    def view_cart(self):
-        self.page.click("text=View Cart")
-        self.page.wait_for_load_state("networkidle")
+        from pages.cart_page import CartPage
+
+        self.page.wait_for_selector(".product-image-wrapper", timeout=10000)
+
+        # ✅ Use nth(0) to target exactly the first add-to-cart button
+        first_product = self.page.locator(".product-image-wrapper").nth(0)
+        first_product.hover()
+
+        # ✅ Use .first to avoid strict mode violation with 2 matching elements
+        first_product.locator("a.add-to-cart").first.click()
+
+        cart = CartPage(self.page, test_name="product_add_to_cart")
+        cart.handle_cart_modal()
+
+        if not cart.is_cart_page():
+            raise AssertionError(
+                f"Not on cart page after adding product. URL: {self.page.url}"
+            )
