@@ -20,18 +20,17 @@ class ProductPage(BasePage):
     def add_blue_top_to_cart(self):
         self.logger.info("Adding Blue Top to cart")
 
-        # ✅ Import here to avoid circular imports
         from pages.cart_page import CartPage
 
-        # ✅ Wait for products to load
         self.page.wait_for_selector(".product-image-wrapper", timeout=10000)
 
-        # ✅ Hover and click Add to Cart on first product
-        first_product = self.page.locator(".product-image-wrapper").first
+        # ✅ Use nth(0) to target exactly the first add-to-cart button
+        first_product = self.page.locator(".product-image-wrapper").nth(0)
         first_product.hover()
-        first_product.locator("a.add-to-cart").click()
 
-        # ✅ Handle modal and navigate to cart
+        # ✅ Use .first to avoid strict mode violation with 2 matching elements
+        first_product.locator("a.add-to-cart").first.click()
+
         cart = CartPage(self.page, test_name="product_add_to_cart")
         cart.handle_cart_modal()
 
