@@ -11,34 +11,31 @@ class ProductPage(BasePage):
         self.page.wait_for_load_state("networkidle")
 
     def search_product(self, product_name):
-        self.open_products()  # ✅ navigate first before searching
+        self.open_products()
+        self.page.wait_for_selector("#search_product", timeout=10000)
         self.page.fill("#search_product", product_name)
         self.page.click("#submit_search")
         self.page.wait_for_load_state("networkidle")
 
-    def add_to_cart(self):
-        self.page.hover(".product-image-wrapper")
-        self.page.click("text=Add to cart")
-        self.page.wait_for_load_state("networkidle")
-
     def add_blue_top_to_cart(self):
         self.logger.info("Adding Blue Top to cart")
-        # Wait for product list
+
+        # ✅ Import here to avoid circular imports
+        from pages.cart_page import CartPage
+
+        # ✅ Wait for products to load
         self.page.wait_for_selector(".product-image-wrapper", timeout=10000)
 
-        # Hover and click Add to cart for the first product (Blue Top)
-        self.page.hover(".product-image-wrapper:first-child")
-        self.page.click(".product-image-wrapper:first-child .add-to-cart")
+        # ✅ Hover and click Add to Cart on first product
+        first_product = self.page.locator(".product-image-wrapper").first
+        first_product.hover()
+        first_product.locator("a.add-to-cart").click()
 
-        # Wait for modal popup
-        self.page.wait_for_selector("text=Your product has been added to cart.", timeout=5000)
+        # ✅ Handle modal and navigate to cart
+        cart = CartPage(self.page, test_name="product_add_to_cart")
+        cart.handle_cart_modal()
 
-        # Click "View Cart" link inside modal
-        self.page.click("a[href='/view_cart']")
-
-        # Wait for cart page to load
-        self.page.wait_for_load_state("networkidle")
-
-    def view_cart(self):
-        self.page.click("text=View Cart")
-        self.page.wait_for_load_state("networkidle")
+        if not cart.is_cart_page():
+            raise AssertionError(
+                f"Not on cart page after adding product. URL: {self.page.url}"
+            )
